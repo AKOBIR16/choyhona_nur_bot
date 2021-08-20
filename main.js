@@ -1,11 +1,13 @@
 const {Telegraf} = require("telegraf")
 const {Markup} = require("telegraf")
-const Extra = require("telegraf")
 const fs = require("fs")
 const dotenv = require("dotenv")
+const express = require("express")
+const app = express();
 //const { button } = require("telegraf/typings/markup")
 dotenv.config();
-const bot = new Telegraf(process.env.Bot_token);
+const CURRENT_URL = "https://wstbots.herokuapp.com/"
+const bot = new Telegraf(process.env.BOT_TOKEN);
 bot.use(Telegraf.log());
 try{
 bot.command("start",(ctx) => {
@@ -18,7 +20,7 @@ bot.command("start",(ctx) => {
 })}
 catch(err){
     console.log(err);
-}console.log(Extra)
+}
 bot.hears("🏡 Xonalar",(ctx) =>{
     ctx.reply("Xonalar bilan tanishing!",
     Markup.keyboard([["🪑 Stolli xonalar","🛏️ Karovatli xonalar"]])
@@ -113,5 +115,14 @@ bot.hears("Bosh menyuga qaytish", (ctx) =>{
     .resize()
     )
 })
+app.use(bot.webhookCallback("/bot"));
+bot.telegram.setWebhook(`${CURRENT_URL}/bot`);
+const PORT = process.env.PORT || 3000
+bot.startPolling()
+app.get("/",(req,res) =>{
+    res.send("Our new tab")
+})
 
-bot.launch()
+app.listen(PORT,  ()=>{
+    console.log(`Listen in the port ${PORT}`)
+    })
